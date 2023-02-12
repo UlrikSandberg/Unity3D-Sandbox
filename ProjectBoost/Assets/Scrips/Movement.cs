@@ -29,19 +29,16 @@ public class Movement : MonoBehaviour
     {
         ProcessInput();
     }
-
-    private void StopThruster()
-    {
-        leftThruster.Stop();
-        rightThruster.Stop();
-    }
     
     private void ProcessInput()
     {
         if (Input.GetKey(KeyCode.Space))
         {
-            leftThruster.Play();
-            rightThruster.Play();
+            if (!leftThruster.isPlaying)
+            {
+                leftThruster.Play();
+                rightThruster.Play();   
+            }
             
             var rocketThrust = rocketMainThrust * Time.deltaTime;
             rocketBody.AddRelativeForce(new Vector3(0, 1 * rocketThrust, 0));
@@ -50,26 +47,36 @@ public class Movement : MonoBehaviour
         }
         else
         {
-            Invoke("StopThruster", 0.5f);
+            if (leftThruster.isPlaying)
+            {
+                leftThruster.Stop();
+                rightThruster.Stop(); 
+            }
+            
             if(thrustSound.isPlaying)
                 thrustSound.Stop();
         }
 
         if (Input.GetKey(KeyCode.A) && !Input.GetKey(KeyCode.D))
         {
-            rightSideThruster.Play();
+            if(!rightSideThruster.isPlaying)
+                rightSideThruster.Play();
+            
+            
             var leftRotationalSpeed = rocketLeftRotationalVelocity * Time.deltaTime;
             var leftTorque = new Vector3(0, 0, -1 * leftRotationalSpeed);
             rocketBody.AddRelativeTorque(leftTorque); 
         }
         else
         {
-            rightSideThruster.Stop();
+            if (rightSideThruster.isPlaying)
+                rightSideThruster.Stop();
         }
 
         if (Input.GetKey(KeyCode.D) && !Input.GetKey(KeyCode.A))
         {
-            leftSideThruster.Play();
+            if(!leftSideThruster.isPlaying)
+                leftSideThruster.Play();
             var rightRotationalSpeed = rocketRightRotationalVelocity * Time.deltaTime;
             var rightTorque = new Vector3(0, 0, 1 * rightRotationalSpeed);
             
@@ -77,7 +84,8 @@ public class Movement : MonoBehaviour
         }
         else
         {
-            leftSideThruster.Stop();
+            if (leftSideThruster.isPlaying)
+                leftSideThruster.Stop();
         }
     }
 }
